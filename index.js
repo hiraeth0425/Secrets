@@ -32,9 +32,14 @@ const db = new pg.Client({
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
   password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
+  port: process.env.PG_PORT || 5432,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
-db.connect();
+db.connect()
+  .then(() => console.log('Database connected'))
+  .catch(err => console.error('Database connection error', err));
 
 app.get("/", (req, res) => {
   res.render("home.ejs");
