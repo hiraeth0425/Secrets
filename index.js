@@ -277,6 +277,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: '伺服器錯誤' });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+});
+
+// 添加錯誤處理
+server.on('error', (error) => {
+  console.error('Server Error:', error);
 });
