@@ -15,33 +15,33 @@ const saltRounds = 10;
 
 env.config();
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+//CORS 配置
+app.use(cors({
+  origin: ['https://secrets-demo.onrender.com', 'http://localhost:8000', 'http://localhost:8080'],
+  credentials: true, // 重要：允許跨域攜帶 cookie
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json()); //// 解析 JSON 請求體
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // HTTPS 環境
+      maxAge: 24 * 60 * 60 * 1000, // 24小時
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    }
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
-
-//CORS 配置
-app.use(cors({
-  origin: ['https://secrets-demo.onrender.com', 'http://localhost:8000', 'http://localhost:8080'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-//錯誤攔截
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: '伺服器錯誤' });
-});
 
 const db = new pg.Client({
   user: process.env.PG_USER,
@@ -53,6 +53,7 @@ const db = new pg.Client({
     rejectUnauthorized: false
   }
 });
+
 db.connect()
   .then(() => console.log('Database connected'))
   .catch(err => console.error('Database connection error', err));
@@ -250,6 +251,12 @@ passport.serializeUser((user, cb) => {
 
 passport.deserializeUser((user, cb) => {
   cb(null, user);
+});
+
+//錯誤攔截
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: '伺服器錯誤' });
 });
 
 app.listen(port, () => {
