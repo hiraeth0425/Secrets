@@ -7,6 +7,7 @@ import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
 import env from "dotenv";
+import cors from "cors"
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -31,8 +32,9 @@ app.use(passport.session());
 
 //CORS 配置
 app.use(cors({
-  origin: ['https://secrets-demo.onrender.com', 'http://localhost:3000'],
-  credentials: true
+  origin: ['https://secrets-demo.onrender.com', 'http://localhost:8000', 'http://localhost:8080'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 //錯誤攔截
