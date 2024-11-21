@@ -33,8 +33,7 @@ app.use(passport.session());
 //CORS 配置
 app.use(cors({
   origin: ['https://secrets-demo.onrender.com', 'http://localhost:8000', 'http://localhost:8080'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true
 }));
 
 //錯誤攔截
