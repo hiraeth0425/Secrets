@@ -21,11 +21,25 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use(express.json()); //// 解析 JSON 請求體
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+//CORS 配置
+app.use(cors({
+  origin: ['https://secrets-demo.onrender.com', 'http://localhost:3000'],
+  credentials: true
+}));
+
+//錯誤攔截
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: '伺服器錯誤' });
+});
 
 const db = new pg.Client({
   user: process.env.PG_USER,
