@@ -43,7 +43,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const connectionString = `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DATABASE}`;
+const connectionString = 'postgresql://secrets_postgresql_user:QReOkgesXldFXjRPwUvGG5aSm32Qg4Dk@dpg-csv04b9u0jms73avrj8g-a.singapore-postgres.render.com/secrets_postgresql'
 
 const db = new pg.Client({
   connectionString: connectionString,
