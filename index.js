@@ -43,7 +43,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+const connectionString = `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DATABASE}`;
+
 const db = new pg.Client({
+  connectionString: connectionString,
   user: process.env.PG_USER,
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
@@ -55,8 +58,23 @@ const db = new pg.Client({
 });
 
 db.connect()
-  .then(() => console.log('Database connected'))
-  .catch(err => console.error('Database connection error', err));
+  .then(() => {
+    console.log('Database Connection Details:');
+    console.log('Host:', process.env.PG_HOST);
+    console.log('Port:', process.env.PG_PORT);
+    console.log('Database:', process.env.PG_DATABASE);
+    console.log('User:', process.env.PG_USER);
+    console.log('Password Length:', process.env.PG_PASSWORD.length);
+  })
+  .catch(err => {
+    console.error('Database Connection Error:', err);
+    console.error('Error Details:', {
+      host: process.env.PG_HOST,
+      port: process.env.PG_PORT,
+      database: process.env.PG_DATABASE,
+      user: process.env.PG_USER
+    });
+  });
 
 app.get("/", (req, res) => {
   res.render("home.ejs");
