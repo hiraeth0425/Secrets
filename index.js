@@ -32,6 +32,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    // 如果使用 PostgreSQL 存儲 session，加入以下設定
+    store: new PostgreSQLStore({
+      conString: process.env.DATABASE_URL,
+    }),
     cookie: {
       secure: process.env.NODE_ENV === 'production', // HTTPS 環境
       maxAge: 24 * 60 * 60 * 1000, // 24小時
@@ -43,7 +47,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const connectionString = 'postgresql://secrets_postgresql_user:QReOkgesXldFXjRPwUvGG5aSm32Qg4Dk@dpg-csv04b9u0jms73avrj8g-a.singapore-postgres.render.com/secrets_postgresql'
+const connectionString = process.env.DATABASE_URL
 
 const db = new pg.Client({
   connectionString: connectionString,
