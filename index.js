@@ -233,6 +233,10 @@ passport.use(
   "local",
   new Strategy(async function verify(username, password, cb) {
     try {
+        // 檢查資料庫連接
+      const testConnection = await db.query('SELECT NOW()');
+      console.log("Database connection test:", testConnection.rows[0]);
+
       const result = await db.query("SELECT * FROM users WHERE username = $1 ", [
         username,
       ]);
@@ -255,7 +259,16 @@ passport.use(
         return cb("User not found")
       }
     } catch (err) {
-      console.log(err);
+      console.error("login error:", {
+        error: err,
+        stack: err.stack,
+        body: req.body
+      });
+      res.status(500).json({
+        success: false,
+        message: "login failed",
+        error: err.message
+      });
     }
   })
 );
