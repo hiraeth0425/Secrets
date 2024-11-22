@@ -32,10 +32,6 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    // 如果使用 PostgreSQL 存儲 session，加入以下設定
-    store: new PostgreSQLStore({
-      conString: process.env.DATABASE_URL,
-    }),
     cookie: {
       secure: process.env.NODE_ENV === 'production', // HTTPS 環境
       maxAge: 24 * 60 * 60 * 1000, // 24小時
