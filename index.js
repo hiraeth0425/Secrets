@@ -155,10 +155,28 @@ app.post(
 );
 
 app.post("/register", async (req, res) => {
+  // 添加請求內容日誌
+  console.log("Registration Request:", {
+    body: req.body,
+    headers: req.headers,
+    method: req.method
+  });
+
   const email = req.body.username;
   const password = req.body.password;
 
   try {
+    // 驗證輸入值
+    if (!email || email.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "email is required and cannot be empty"
+      });
+    }
+     // 檢查資料庫連接
+     const testConnection = await db.query('SELECT NOW()');
+     console.log("Database connection test:", testConnection.rows[0]);
+
     const checkResult = await db.query("SELECT * FROM users WHERE username = $1", [
       email,
     ]);
@@ -183,7 +201,16 @@ app.post("/register", async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
+     console.error("Registration error:", {
+      error: err,
+      stack: err.stack,
+      body: req.body
+    });
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+      error: err.message
+    });
   }
 });
 
