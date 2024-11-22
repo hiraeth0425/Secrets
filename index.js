@@ -93,7 +93,7 @@ app.get("/logout", (req, res) => {
     if (err) {
       return next(err);
     }
-    res.redirect("/");
+    return res.redirect("/");
   });
 });
 
@@ -124,7 +124,7 @@ app.get("/secrets", async(req, res) => {
     }
   }else{
     console.log("User not authenticated, redirecting to login");
-    res.redirect("/login")
+    return res.redirect("/login")
   }
 });
 
@@ -134,7 +134,7 @@ app.get("/submit",(req, res) => {
   if(req.isAuthenticated()){
     res.render("submit.ejs")
   }else{
-    res.redirect("/login")
+    return res.redirect("/login")
   }
 })
 
@@ -189,7 +189,7 @@ app.post("/register", async (req, res) => {
     ]);
 
     if (checkResult.rows.length > 0) {
-      req.redirect("/login");
+      return res.redirect("/login");
     } else {
       bcrypt.hash(password, saltRounds, async (err, hash) => {
         if (err) {
@@ -202,7 +202,7 @@ app.post("/register", async (req, res) => {
           const user = result.rows[0];
           req.login(user, (err) => {
             console.log("success");
-            res.redirect("/secrets");
+            return res.redirect("/secrets");
           });
         }
       });
@@ -229,7 +229,7 @@ app.post("/submit",async(req, res) => {
     const user = req.user.username    
     console.log(secret);
     const result = await db.query("UPDATE users SET secret = $1 WHERE username = $2 RETURNING *;",[secret, user])
-    res.redirect("/secrets")
+    return res.redirect("/secrets")
   }catch(err){
     console.log(err);
   }
