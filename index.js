@@ -98,15 +98,20 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/secrets", async(req, res) => {
-  //TODO: Update this to pull in the user secret to render in secrets.ejs
-  console.log(req.user); //全局都可以取得req.user
+   // 添加更多日誌來追蹤執行流程
+   console.log("Accessing secrets route");
+   console.log("Session:", req.session);
+   console.log("User:", req.user);
+   console.log("isAuthenticated:", req.isAuthenticated());
+
   if(req.isAuthenticated()){
     try{
       const result = await db.query("SELECT * FROM users WHERE username = $1", [req.user.username])
       const user = result.rows[0]
+      console.log("Database query result:", result.rows);
       if(user.secret){
         res.render("secrets.ejs",{
-          secret: user.secret
+          secret: user.secret || 'No Secret',
         })
       }else {
         res.render("secrets.ejs",{
@@ -114,9 +119,11 @@ app.get("/secrets", async(req, res) => {
         })
       }
     }catch(err){
-      console.log(err);
+      console.error("Database error:", err);
+      return res.status(500).send("An error occurred");
     }
   }else{
+    console.log("User not authenticated, redirecting to login");
     res.redirect("/login")
   }
 });
