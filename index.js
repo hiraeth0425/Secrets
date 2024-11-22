@@ -271,10 +271,14 @@ passport.deserializeUser((user, cb) => {
   cb(null, user);
 });
 
-//錯誤攔截
+// 路由錯誤攔截
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: '伺服器錯誤' });
+  console.error('Global Error Handler:', err);
+  res.status(500).json({
+    message: '服務器錯誤',
+    error: err.message,
+    stack: process.env.NODE_ENV === 'production' ? '🍂' : err.stack
+  });
 });
 
 const server = app.listen(port, () => {
